@@ -41,6 +41,9 @@
 
     <script>
         document.addEventListener("DOMContentLoaded", () => {
+            const machineSound = new Audio('machine-sound.mp3');
+            const humanSound = new Audio('human-sound.mp3');
+
             function machine(message) {
                 return new Promise((resolve) => {
                     const messageLength = message.length;
@@ -53,6 +56,7 @@
                         let i = 0;
                         const interval = setInterval(() => {
                             target.append(message.charAt(i));
+                            machineSound.play();
 
                             i++;
                             if (i >= messageLength) {
@@ -91,7 +95,7 @@
             function randomNumber(min, max) {
                 return Math.floor(Math.random() * (max - min + 1) + min);
             }
- 
+
             function human(message, delay) {
                 return new Promise((resolve) => {
                     const messageLength = message.length;
@@ -107,10 +111,12 @@
 
                         let i = 0;
                         function printLetter() {
-                            if (i < messageLength)
+                            if (i < messageLength) {
                                 target.append(message.charAt(i));
-                            else
+                                humanSound.play();
+                            } else {
                                 resolve();
+                            }
 
                             const randomDelay = randomNumber(200, 800);
                             setTimeout(printLetter, randomDelay);
