@@ -1,0 +1,203 @@
+<!doctype html>
+<html lang="el">
+<head>
+    <meta charset="utf-8">
+    <title>Σουίτα Εξόδου</title>
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+
+    <style>
+        body {
+            font: 12px/24px 'Press Start 2P', monospace;
+            background-color: #2f2e2b;
+            color: #6aef6a;
+        }
+
+        .human-message {
+            display: flex;
+            min-height: 24px;
+            margin: 12px 0;
+        }
+
+        .blinking-cursor {
+            background: #6aef6a;
+            width: 13px;
+            height: 3px;
+            margin-top: 13px;
+            -webkit-animation: blink .6s infinite;
+                    animation: blink .6s infinite;
+        }
+
+        @-webkit-keyframes blink {
+            0% {background: #2f2e2b}
+            50% {background: #6aef6a}
+            100% {background: #2f2e2b}
+        }
+    </style>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            function machine(message) {
+                return new Promise((resolve) => {
+                    const messageLength = message.length;
+                    const target = document.createElement("div");
+
+                    setTimeout(() => {
+                        target.innerHTML = '>> ';
+                        document.body.appendChild(target);
+
+                        let i = 0;
+                        const interval = setInterval(() => {
+                            target.append(message.charAt(i));
+
+                            i++;
+                            if (i >= messageLength) {
+                                clearInterval(interval);
+                                resolve();
+                            }
+                        }, 100);
+                    }, 400);
+                })
+            }
+
+            function machineLoading(repeats) {
+                return new Promise((resolve) => {
+                    const target = document.createElement("div");
+                    document.body.appendChild(target);
+
+                    let i = 0;
+                    let dots = '';
+                    const interval = setInterval(() => {
+                        target.innerHTML = '>> ' + dots;
+                        dots += ".";
+                        if (dots.length > 3) {
+                            dots = '';
+                        }
+
+                        i++;
+                        if (i > repeats) {
+                            target.remove();
+                            clearInterval(interval);
+                            resolve();
+                        }
+                    }, 200);
+                })
+            }
+
+            function randomNumber(min, max) {
+                return Math.floor(Math.random() * (max - min + 1) + min);
+            }
+ 
+            function human(message, delay) {
+                return new Promise((resolve) => {
+                    const messageLength = message.length;
+                    const target = document.createElement("div");
+
+                    target.setAttribute('class', 'human-message');
+                    target.innerHTML = "<div class='blinking-cursor'></div>";
+
+                    document.body.appendChild(target);
+
+                    setTimeout(() => {
+                        target.innerHTML = '';
+
+                        let i = 0;
+                        function printLetter() {
+                            if (i < messageLength)
+                                target.append(message.charAt(i));
+                            else
+                                resolve();
+
+                            const randomDelay = randomNumber(200, 800);
+                            setTimeout(printLetter, randomDelay);
+                            i++;
+                        }
+
+                        printLetter();
+                    }, delay);
+                })
+            }
+
+            function generateRandomString(stringLength) {
+                const characters = "ΑΒΓΔΕΖΗΘΙΚΛΜΝΞΟΠΡΣΤΦΧΨΩαβγδεζηθικλμνξοπρστφχψω0123456789";
+                let result = '';
+
+                for (let i = 0; i < stringLength; i++) {
+                    const randomIndex = Math.floor(Math.random() * characters.length);
+                    result += characters.charAt(randomIndex);
+                }
+
+                return result;
+            }
+
+            let cancel = false;
+            function shuttingDown() {
+                return new Promise((resolve) => {
+                    const target = document.createElement("div");
+                    document.body.appendChild(target);
+
+                    let randomString;
+                    const interval = setInterval(() => {
+                        randomString = generateRandomString(32);
+                        target.innerHTML = '>> ' + randomString;
+
+                        if (cancel) {
+                            target.remove();
+                            clearInterval(interval);
+                        }
+                    }, 100);
+
+                    resolve();
+                })
+            }
+
+            function returnToMainMenu() {
+                setTimeout(() => {
+                    document.body.append('>> Επιστροφή στην Αρχική Σελίδα.');
+                }, 1000);
+            }
+
+            machine('Καλώς ήρθατε στη Σουίτα Εξόδου!').then(() =>
+            machine('Είστε άνω των 18;')).then(() =>
+            human('Ναι', 2000)).then(() =>
+            machine('Παρακαλώ, πληκτρολογήστε τον προσωπικό σας κωδικό.')).then(() =>
+            human('1944', 2000)).then(() =>
+            machineLoading(14)).then(() =>
+            machine('Ο κωδικός αυτός είναι λανθασμένος.')).then(() =>
+            machine('Παρακαλώ, πληκτρολογήστε ξανά.')).then(() =>
+            machine('Προσπάθειες που απομένουν: 2.')).then(() =>
+            human('Έξοδος1944', 4000)).then(() =>
+            machineLoading(10)).then(() =>
+            machine('Συγχαρητήρια!')).then(() =>
+            machine('Έχετε εισέλθει με επιτυχία στην προσωπική σας Σουίτα.')).then(() =>
+            machine('Έχετε επιλέξει τον τερματισμό λειτουργίας σας οικειοθελώς;')).then(() =>
+            human('Όχι', 3000)).then(() =>
+            machine('Πολύ ωραία!')).then(() =>
+            machine('Για τη ρύθμιση της εξόδου, χρειάζεται να απαντήσετε στις παρακάτω ερωτήσεις.')).then(() =>
+            machine('Συμφωνείτε;')).then(() =>
+            human('Ναι', 1000)).then(() =>
+            machine('Πολύ ωραία!')).then(() =>
+            machine('Επιθυμείτε την οριστική διαγραφή των δεδομένων σας από τις μνήμες συγγενών και φίλων;')).then(() =>
+            human('Όχι', 2000)).then(() =>
+            machine('Συναινείτε στη χρησιμοποίηση του κώδικά σας σε πιθανά μελλοντικά περιβάλλοντα;')).then(() =>
+            human('Όχι', 1000)).then(() =>
+            machine('Πολύ ωραία!')).then(() =>
+            machine('Η ρύθμιση παραμέτρων έχει ολοκληρωθεί.')).then(() =>
+            machine('Εκκίνηση τερματισμού λειτουργίας.')).then(() =>
+            shuttingDown()).then(() =>
+            human('Ακύρωση', 4000)).then(() => {
+                cancel = true;
+                machineLoading(25).then(() =>
+                machine('Σφάλμα.')).then(() =>
+                returnToMainMenu());
+            });
+        });
+    </script>
+</head>
+
+<body></body>
+</html>
